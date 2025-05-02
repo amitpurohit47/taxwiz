@@ -1,12 +1,16 @@
 package com.taxwiz.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
+@Entity
 public class Employee {
+    @Id
+    private String employeeId;
     private String firstName;
     private String lastName;
     private Integer userId;
@@ -14,12 +18,8 @@ public class Employee {
     private String phone;
     private String password;
 
-    public Employee(String firstName, String lastName, Integer userId, String email, String phone, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.userId = userId;
-        this.email = email;
-        this.phone = phone;
-        this.password = password;
-    }
+    @ManyToOne
+    @JoinColumn(name = "firm_id")
+    private Firm firm;
+
 }

@@ -1,29 +1,28 @@
 package com.taxwiz.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import lombok.Data;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Data
+@Entity
 public class Firm {
+    @Id
+    private String id;
     private String firmName;
     private String gstNo;
     private String email;
     private String phone;
+
+    @OneToMany(mappedBy = "firm", cascade = CascadeType.ALL)
     private List<Client> clients;
+
+    @OneToMany(mappedBy = "firm", cascade = CascadeType.ALL)
     private List<Employee> employees;
 
-    public Firm() {}
-
-    public Firm(String firmName, String gstNo, String email, String phone, List<Client> clients, List<Employee> employees) {
-        this.firmName = firmName;
-        this.gstNo = gstNo;
-        this.email = email;
-        this.phone = phone;
-        this.clients = clients;
-        this.employees = employees;
-    }
 
 }
