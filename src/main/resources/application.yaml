@@ -2,7 +2,7 @@ spring:
     datasource:
         url: jdbc:postgresql://localhost:5432/taxwiz
         username: postgres
-        password: your_password
+        driver-class-name: org.postgresql.Driver
     jpa:
         hibernate:
             ddl-auto: update

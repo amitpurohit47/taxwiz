@@ -1,22 +1,21 @@
 package com.taxwiz.controller;
 
+import com.taxwiz.dto.FirmDto;
+import com.taxwiz.dto.PasswordChange;
 import com.taxwiz.model.FirmResponseEntity;
 import com.taxwiz.service.firm.FirmAuthService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import org.slf4j.Logger;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/firm/auth")
 public class FirmAuthController {
-
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     private final FirmAuthService firmAuthService;
 
@@ -25,8 +24,15 @@ public class FirmAuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<FirmResponseEntity> registerFirm(@RequestBody RequestEntity registerRequest) {
-        firmAuthService.registerFirm();
-        return ResponseEntity.ok(new FirmResponseEntity());
+    public ResponseEntity<FirmResponseEntity> registerFirm(@RequestBody FirmDto registerRequest) {
+        String passwordLink = firmAuthService.registerFirm(registerRequest);
+        return ResponseEntity.ok(new FirmResponseEntity(registerRequest.getFirmName(), passwordLink));
+    }
+
+    @PostMapping("/set-password")
+    public ResponseEntity setPassword(@RequestParam String token, @RequestBody PasswordChange passwordChange) {
+        log.info("Setting password for firm with JWT: {}", passwordChange.getJwt());
+        firmAuthService.setPassword(token, passwordChange);
+        return ResponseEntity.ok().build();
     }
 }

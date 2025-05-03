@@ -1,22 +1,23 @@
 package com.taxwiz.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Entity
 public class Firm {
     @Id
     private String id;
+
+    private String uid;
     private String firmName;
     private String gstNo;
     private String email;
     private String phone;
+    private String password;
 
     @OneToMany(mappedBy = "firm", cascade = CascadeType.ALL)
     private List<Client> clients;
@@ -24,5 +25,21 @@ public class Firm {
     @OneToMany(mappedBy = "firm", cascade = CascadeType.ALL)
     private List<Employee> employees;
 
+    public Firm() {
+    }
+
+    public Firm(String firmName, String gstNo, String email, String phone) {
+        this.firmName = firmName;
+        this.gstNo = gstNo;
+        this.email = email;
+        this.phone = phone;
+    }
+
+    @PrePersist
+    public void init() {
+        if ( this.uid == null ) {
+            this.uid = UUID.randomUUID().toString();
+        }
+    }
 
 }

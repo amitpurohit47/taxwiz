@@ -1,17 +1,41 @@
 package com.taxwiz.service.firm;
 
+import com.taxwiz.auth.JwtSetup;
 import com.taxwiz.dto.FirmDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.taxwiz.dto.PasswordChange;
+import com.taxwiz.model.Firm;
+import com.taxwiz.repository.firm.FirmRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class FirmAuthService {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private final FirmRepository firmRepository;
+    private final JwtSetup jwtSetup;
 
-    public void registerFirm(FirmDto firmRegisterRequest) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    public String registerFirm(FirmDto firmRegisterRequest) {
+        saveFirm(firmRegisterRequest);
+        String token = jwtSetup.generateToken(firmRegisterRequest.getFirmName(), "password-change");
+        return "http://localhost:8080/api/firm/auth/set-password?token=" + token;
+    }
+
+    public void saveFirm(FirmDto firmRegisterRequest) {
+        Firm firm = new Firm(firmRegisterRequest.getFirmName(), firmRegisterRequest.getGstNo(), firmRegisterRequest.getEmail(), firmRegisterRequest.getPhone());
+        firmRepository.save(firm);
+    }
+
+    public void setPassword(String token, PasswordChange passwordChange) {
+        if (token != null && jwtSetup.validateToken(token)) {
+            String firmId = jwtSetup.extractClaim(token).get("firmId").toString();
+            Firm firm = firmRepository.findById(firmId).orElseThrow(() -> new RuntimeException("Firm not found"));
+            firm.setPassword(passwordChange.getNewPassword());
+            firmRepository.save(firm);
+        } else {
+            throw new RuntimeException("Invalid token");
+        }
     }
 }
