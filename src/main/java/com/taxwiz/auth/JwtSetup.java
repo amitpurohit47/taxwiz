@@ -13,7 +13,7 @@ import java.util.Map;
 @Slf4j
 @Component
 public class JwtSetup {
-    private final String SECRET_KEY = "my-secret";
+    private final String SECRET_KEY = "a9D9Q9wvm2hLkS9UT+p8fyLZQJ0V4CfV6sbfwl3jwM0=";
     private final long expirationTime = 1000 * 60 * 30; // 1 day
 
     public String generateToken(String firmId, String purpose) {

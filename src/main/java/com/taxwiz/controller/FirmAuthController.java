@@ -3,14 +3,10 @@ package com.taxwiz.controller;
 import com.taxwiz.dto.FirmDto;
 import com.taxwiz.dto.PasswordChange;
 import com.taxwiz.model.FirmResponseEntity;
-import com.taxwiz.service.firm.FirmAuthService;
+import com.taxwiz.service.FirmAuthService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import org.slf4j.Logger;
 
 @Slf4j
 @RestController

@@ -1,5 +1,8 @@
 package com.taxwiz.model;
 
+import lombok.Data;
+
+@Data
 public class FirmResponseEntity {
     private String firmName;
     private String passwordChangeLink;

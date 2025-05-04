@@ -10,10 +10,13 @@ import java.util.UUID;
 @Entity
 public class Firm {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String uid;
     private String firmName;
+
+    @Column(unique = true)
     private String gstNo;
     private String email;
     private String phone;

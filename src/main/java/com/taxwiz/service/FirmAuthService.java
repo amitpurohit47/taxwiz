@@ -1,4 +1,4 @@
-package com.taxwiz.service.firm;
+package com.taxwiz.service;
 
 import com.taxwiz.auth.JwtSetup;
 import com.taxwiz.dto.FirmDto;
@@ -15,12 +15,15 @@ import org.springframework.stereotype.Service;
 public class FirmAuthService {
 
     private final FirmRepository firmRepository;
+    private final EmailService emailService;
     private final JwtSetup jwtSetup;
 
     public String registerFirm(FirmDto firmRegisterRequest) {
         saveFirm(firmRegisterRequest);
         String token = jwtSetup.generateToken(firmRegisterRequest.getFirmName(), "password-change");
-        return "http://localhost:8080/api/firm/auth/set-password?token=" + token;
+        String passwordChangeLink = "http://localhost:8080/api/firm/auth/set-password?token=" + token;
+        emailService.sendMail(firmRegisterRequest.getEmail(), "Password update", "Kindly update your password using the link: " + passwordChangeLink);
+        return passwordChangeLink;
     }
 
     public void saveFirm(FirmDto firmRegisterRequest) {
@@ -34,6 +37,7 @@ public class FirmAuthService {
             Firm firm = firmRepository.findById(firmId).orElseThrow(() -> new RuntimeException("Firm not found"));
             firm.setPassword(passwordChange.getNewPassword());
             firmRepository.save(firm);
+
         } else {
             throw new RuntimeException("Invalid token");
         }
