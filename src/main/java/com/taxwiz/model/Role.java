@@ -1,4 +1,4 @@
 package com.taxwiz.model;
 
-public class Admin {
+public class Role {
 }
