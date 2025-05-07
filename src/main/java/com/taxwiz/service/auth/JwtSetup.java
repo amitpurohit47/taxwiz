@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,24 @@ public class JwtSetup {
                 .compact();
     }
 
+    public boolean isTokenValid(String token, String username) {
+        return !isTokenExpired(token) && validateToken(token, username);
+    }
+
+    private boolean validateToken(String token, String username) {
+        if ( !extractClaim(token, Claims::getSubject).equals(username) ) return false;
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(buildKey())
+                    .build()
+                    .parseClaimsJws(token);
+        } catch (SignatureException e) {
+            log.info("Signature verification failed");
+            return false;
+        }
+        return true;
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> resolver) {
         Claims claims = extractClaims(token);
         return resolver.apply(claims);
@@ -47,7 +66,7 @@ public class JwtSetup {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private Claims extractClaims(String token) {
+    public Claims extractClaims(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(buildKey())
