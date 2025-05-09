@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 import static com.taxwiz.utils.ErrorMessages.INVALID_TOKEN;
 import static com.taxwiz.utils.ErrorMessages.TOKEN_EXPIRED;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -36,6 +38,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+        log.info("Intercepting request");
         String header = request.getHeader("Authorization");
         String token = null;
         String username = null;
@@ -45,9 +48,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 username = jwtSetup.extractClaim(token, Claims::getSubject);
             } catch (ExpiredJwtException e) {
+                log.error("Token Expired");
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, TOKEN_EXPIRED.name());
                 return;
             } catch (Exception e) {
+                log.error("Error while validating token {}",e.getMessage());
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, INVALID_TOKEN.name());
                 return;
             }
@@ -58,6 +63,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if ( jwtSetup.isTokenValid(token, username) ) {
                 Claims claims = jwtSetup.extractClaims(token);
                 List<String> roles = claims.get("roles", List.class);
+                log.info("Extracting roles");
                 List<GrantedAuthority> grantedAuthorityList =
                         roles.stream()
                                 .map(SimpleGrantedAuthority::new)
@@ -65,9 +71,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(username,null,grantedAuthorityList);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                log.error("Invalid Token");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, INVALID_TOKEN.name());
+                return;
             }
         }
 
         doFilter(request, response, filterChain);
     }
+
 }

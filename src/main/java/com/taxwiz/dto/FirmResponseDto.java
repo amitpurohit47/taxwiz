@@ -1,5 +1,8 @@
 package com.taxwiz.dto;
 
+import lombok.Getter;
+
+@Getter
 public class FirmResponseDto {
     private String uid;
     private String name;
