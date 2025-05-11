@@ -26,6 +26,7 @@ public class Firm {
     @OneToMany(mappedBy = "firm")
     private List<User> admin;
 
+
     public Firm() {}
 
     public Firm(String name, String gstNo, String address, String email, String phone) {
