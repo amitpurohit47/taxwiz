@@ -1,11 +1,12 @@
 package com.taxwiz.dto;
 
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class FirmDto {
-    private String firmName;
+    private String name;
     private String gstNo;
+    private String address;
     private String email;
     private String phone;
 }

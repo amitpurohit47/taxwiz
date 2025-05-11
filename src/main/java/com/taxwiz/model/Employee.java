@@ -1,13 +1,16 @@
 package com.taxwiz.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
-@Data
 @Entity
+@Getter
+@Setter
 public class Employee {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,19 +18,28 @@ public class Employee {
     private String uid;
     private String firstName;
     private String lastName;
-    private Integer userId;
     private String email;
     private String phone;
-    private String password;
+    private String address;
 
-    @ManyToOne
-    @JoinColumn(name = "firm_id")
-    private Firm firm;
+    /**
+     * @ManyToOne
+     *  private Firm firm;
+     *
+     *  Not adding this because there is no direct linkage between Employee and Firm
+     *  Employee has User and User has Firm
+     *  This creates a circular dependency and redundancy
+     *  Instead, we'll use query
+     */
+
+
+    @OneToOne
+    private User user;
 
     @PrePersist
-    public void init() {
-        if ( this.uid == null ) {
-            this.uid = UUID.randomUUID().toString();
+    private void prePersist() {
+        if ( uid == null ) {
+            uid = UUID.randomUUID().toString();
         }
     }
 }
