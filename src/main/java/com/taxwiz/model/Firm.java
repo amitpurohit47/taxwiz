@@ -3,6 +3,7 @@ package com.taxwiz.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -21,6 +22,9 @@ public class Firm {
     private String address;
     private String email;
     private String phone;
+
+    @OneToMany(mappedBy = "firm")
+    private List<User> admin;
 
     public Firm() {}
 

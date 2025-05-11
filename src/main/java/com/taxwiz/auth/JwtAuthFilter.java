@@ -34,7 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String url = request.getRequestURI();
-        if (url.contains("/api/user/auth/login")) {
+        if (url.contains("/api/user/auth")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -49,11 +49,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 username = jwtSetup.extractClaim(token, Claims::getSubject);
             } catch (ExpiredJwtException e) {
                 log.error("Token Expired");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, TOKEN_EXPIRED.name());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write("{\"error\": \"" + TOKEN_EXPIRED.name() + "\"}");
+                response.getWriter().flush();
                 return;
             } catch (Exception e) {
                 log.error("Error while validating token {}",e.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write("{\"error\": \"" + INVALID_TOKEN.name() + "\"}");
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, INVALID_TOKEN.name());
+                response.getWriter().flush();
                 return;
             }
         }
@@ -62,7 +71,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             if ( jwtSetup.isTokenValid(token, username) ) {
                 Claims claims = jwtSetup.extractClaims(token);
+                String tokenType = claims.get("type", String.class);
+                if (tokenType == null || !tokenType.equals("login")) {
+                    log.error("Invalid Login Token");
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, INVALID_TOKEN.name());
+                    return;
+                }
                 List<String> roles = claims.get("roles", List.class);
+
                 log.info("Extracting roles");
                 List<GrantedAuthority> grantedAuthorityList =
                         roles.stream()
