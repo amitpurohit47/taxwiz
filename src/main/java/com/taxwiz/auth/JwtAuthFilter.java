@@ -78,7 +78,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     return;
                 }
                 List<String> roles = claims.get("roles", List.class);
-
+                for (String role : roles) {
+                    log.info("Role: {}", role);
+                }
                 log.info("Extracting roles");
                 List<GrantedAuthority> grantedAuthorityList =
                         roles.stream()
