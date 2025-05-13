@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import static com.taxwiz.utils.ErrorMessages.NOT_FOUND;
 
 @Slf4j
 @RestController
@@ -24,7 +23,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping("/create")
-    @PreAuthorize("hasRole('FIRM_ADMIN')")
+    @PreAuthorize("hasAuthority('FIRM_ADMIN')")
     public ResponseEntity<?> createEmployee(@RequestBody EmployeeDto employeeDto, @RequestHeader("Authorization") String authorization) {
         log.info("Creating employee");
         try {

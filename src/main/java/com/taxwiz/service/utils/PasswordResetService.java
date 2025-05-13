@@ -39,9 +39,9 @@ public class PasswordResetService {
                 "password-reset"
         );
         String token = jwtSetup.generateToken(claims, username, Duration.ofMillis(expirationTime));
-        String resetLink = String.format("%s/api/user/auth/reset-password?token=%s", baseUrl, token);
+        String resetLink = String.format("%s/api/user/auth/set-password?token=%s", baseUrl, token);
         String subject = "Password Reset Request";
         String body = String.format("Click the link to set your password: %s", resetLink);
-        emailService.sendEmail(user.getFirm().getEmail(), subject, body);
+        emailService.sendEmail(username, subject, body);
     }
 }
