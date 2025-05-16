@@ -1,6 +1,7 @@
 package com.taxwiz.service.client;
 
 import com.taxwiz.dto.ClientDto;
+import com.taxwiz.exception.NotFoundException;
 import com.taxwiz.model.Client;
 import com.taxwiz.model.User;
 import com.taxwiz.repository.ClientRepository;
@@ -15,6 +16,7 @@ import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 
 import static com.taxwiz.utils.ErrorMessages.*;
@@ -71,5 +73,16 @@ public class ClientService {
             log.error("Error creating client: {}", e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public List<ClientDto> fetchAllClients(String token) {
+            String username = jwtSetup.extractClaim(token, Claims::getSubject);
+            User user = userRepository.findByUsername(username);
+            if ( user == null ) {
+                log.info("User {} not found", username);
+                throw new NotFoundException(NOT_FOUND.name());
+            }
+            List<Client> clients = clientRepository.findAllByFirmId(user.getFirm().getId());
+            return clients.stream().map(client -> new ClientDto(client.getUid(), client.getName(), client.getEmail(), client.getGstNo(), client.getPhone(), client.getAddress())).toList();
     }
 }
