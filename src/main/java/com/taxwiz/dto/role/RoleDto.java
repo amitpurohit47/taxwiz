@@ -1,4 +1,4 @@
-package com.taxwiz.dto;
+package com.taxwiz.dto.role;
 
 import lombok.Getter;
 

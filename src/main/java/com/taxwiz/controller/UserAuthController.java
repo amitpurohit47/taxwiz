@@ -1,8 +1,8 @@
 package com.taxwiz.controller;
 
 import com.taxwiz.dto.ErrorResponseDto;
-import com.taxwiz.dto.LoginDto;
-import com.taxwiz.dto.ResetPasswordDto;
+import com.taxwiz.dto.auth.LoginDto;
+import com.taxwiz.dto.auth.ResetPasswordDto;
 import com.taxwiz.exception.BadCredentialsException;
 import com.taxwiz.exception.NotFoundException;
 import com.taxwiz.service.auth.JwtSetup;

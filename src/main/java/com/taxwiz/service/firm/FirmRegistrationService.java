@@ -1,6 +1,6 @@
 package com.taxwiz.service.firm;
 
-import com.taxwiz.dto.FirmDto;
+import com.taxwiz.dto.firm.FirmDto;
 import com.taxwiz.exception.AlreadyExistsException;
 import com.taxwiz.model.Firm;
 import com.taxwiz.model.Role;

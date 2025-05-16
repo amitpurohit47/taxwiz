@@ -1,8 +1,8 @@
 package com.taxwiz.controller;
 
 import com.taxwiz.dto.ErrorResponseDto;
-import com.taxwiz.dto.FirmDto;
-import com.taxwiz.dto.FirmResponseDto;
+import com.taxwiz.dto.firm.FirmDto;
+import com.taxwiz.dto.firm.FirmResponseDto;
 import com.taxwiz.exception.AlreadyExistsException;
 import com.taxwiz.model.Firm;
 import com.taxwiz.service.firm.FirmRegistrationService;

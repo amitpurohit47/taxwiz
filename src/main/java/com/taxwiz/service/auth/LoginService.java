@@ -1,6 +1,6 @@
 package com.taxwiz.service.auth;
 
-import com.taxwiz.dto.LoginDto;
+import com.taxwiz.dto.auth.LoginDto;
 import com.taxwiz.exception.BadCredentialsException;
 import com.taxwiz.exception.NotFoundException;
 import com.taxwiz.model.Role;
