@@ -1,4 +1,4 @@
-package com.taxwiz.dto;
+package com.taxwiz.dto.client;
 
 import lombok.Getter;
 import lombok.Setter;
