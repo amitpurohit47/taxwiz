@@ -25,6 +25,10 @@ public class Client {
     @JoinColumn(name = "firm_id", nullable = false)
     private Firm firm;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
+
     @PrePersist
     public void prePersist() {
         if ( this.uid == null ) {

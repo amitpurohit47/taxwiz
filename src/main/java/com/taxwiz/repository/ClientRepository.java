@@ -11,4 +11,5 @@ import java.util.List;
 public interface ClientRepository extends JpaRepository<Client, Long> {
     Client findByUid(String uid);
     List<Client> findAllByFirmId(Long firmId);
+    List<Client> findAllByEmployeeId(Long employeeId);
 }

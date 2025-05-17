@@ -1,6 +1,7 @@
 package com.taxwiz.service.client;
 
-import com.taxwiz.dto.ClientDto;
+
+import com.taxwiz.dto.client.ClientDto;
 import com.taxwiz.exception.NotFoundException;
 import com.taxwiz.model.Client;
 import com.taxwiz.model.User;
@@ -83,6 +84,37 @@ public class ClientService {
                 throw new NotFoundException(NOT_FOUND.name());
             }
             List<Client> clients = clientRepository.findAllByFirmId(user.getFirm().getId());
-            return clients.stream().map(client -> new ClientDto(client.getUid(), client.getName(), client.getEmail(), client.getGstNo(), client.getPhone(), client.getAddress())).toList();
+            return clients.stream()
+                    .filter(Client::isVerified)
+                    .map(client -> new ClientDto(client.getUid(), client.getName(), client.getEmail(), client.getGstNo(), client.getPhone(), client.getAddress()))
+                    .toList();
+    }
+
+    public List<ClientDto> fetchAllUnverifiedClients(String token) {
+        String username = jwtSetup.extractClaim(token, Claims::getSubject);
+        User user = userRepository.findByUsername(username);
+        if ( user == null ) {
+            log.info("User {} not found", username);
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        List<Client> clients = clientRepository.findAllByFirmId(user.getFirm().getId());
+        return clients.stream()
+                .filter(client -> !client.isVerified())
+                .map(client -> new ClientDto(client.getUid(), client.getName(), client.getEmail(), client.getGstNo(), client.getPhone(), client.getAddress()))
+                .toList();
+    }
+
+    public List<ClientDto> fetchClientByUser(String token) {
+        String username = jwtSetup.extractClaim(token, Claims::getSubject);
+        User user = userRepository.findByUsername(username);
+        if ( user == null ) {
+            log.info("User {} not found", username);
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        List<Client> clients = clientRepository.findAllByEmployeeId(user.getId());
+        return clients.stream()
+                .filter(Client::isVerified)
+                .map(client -> new ClientDto(client.getUid(), client.getName(), client.getEmail(), client.getGstNo(), client.getPhone(), client.getAddress()))
+                .toList();
     }
 }

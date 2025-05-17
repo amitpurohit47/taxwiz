@@ -1,9 +1,11 @@
 package com.taxwiz.controller;
 
-import com.taxwiz.dto.ClientDto;
 import com.taxwiz.dto.ErrorResponseDto;
+import com.taxwiz.dto.client.ClientDto;
 import com.taxwiz.exception.BadCredentialsException;
 import com.taxwiz.exception.NotFoundException;
+import com.taxwiz.exception.UnverifiedException;
+import com.taxwiz.service.client.AssignClientService;
 import com.taxwiz.service.client.ClientService;
 import com.taxwiz.service.client.VerifyClientService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -24,6 +26,7 @@ public class ClientController {
 
     private final ClientService clientService;
     private final VerifyClientService verifyClientService;
+    private final AssignClientService assignClientService;
 
     @PreAuthorize("hasAuthority('FIRM_ADMIN')")
     @PostMapping("/create")
@@ -61,7 +64,7 @@ public class ClientController {
         }
     }
 
-    @GetMapping("fetchAll")
+    @GetMapping("/fetchAll")
     @PreAuthorize("hasAuthority('FIRM_ADMIN')")
     public ResponseEntity<?> fetchAllClients(@RequestHeader ("Authorization") String authorization) {
         log.info("Fetching all clients");
@@ -73,6 +76,43 @@ public class ClientController {
         } catch (ExpiredJwtException | BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(e.getMessage()));
         } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(e.getMessage()));
+        }
+    }
+
+    @GetMapping("fetchByUser")
+    @PreAuthorize("hasAuthority('FIRM_USER')")
+    public ResponseEntity<?> fetchClientByUser(@RequestHeader ("Authorization") String authorization) {
+        log.info("Fetching client by user");
+        try {
+            String token = authorization.substring(7);
+            return ResponseEntity.ok(clientService.fetchClientByUser(token));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDto(e.getMessage()));
+        } catch (ExpiredJwtException | BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/assign")
+    @PreAuthorize("hasAuthority('FIRM_ADMIN')")
+    public ResponseEntity<?> assignClientToEmployee(@RequestHeader ("Authorization") String authorization, @RequestParam String clientUid, @RequestParam String employeeUid) {
+        log.info("Assigning client to employee");
+        try {
+            if (authorization == null || !authorization.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(INVALID_TOKEN.name()));
+            }
+            String token = authorization.substring(7);
+            assignClientService.assignClientToEmployee(clientUid, employeeUid, token);
+            return ResponseEntity.ok("Client assigned to employee successfully");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDto(e.getMessage()));
+        } catch (ExpiredJwtException | BadCredentialsException | UnverifiedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(e.getMessage()));
+        }
+        catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(e.getMessage()));
         }
     }
