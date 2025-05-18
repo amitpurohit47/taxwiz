@@ -1,6 +1,7 @@
 package com.taxwiz.controller;
 
 import com.taxwiz.dto.ErrorResponseDto;
+import com.taxwiz.dto.client.AssignClientDto;
 import com.taxwiz.dto.client.ClientDto;
 import com.taxwiz.exception.BadCredentialsException;
 import com.taxwiz.exception.NotFoundException;
@@ -98,14 +99,14 @@ public class ClientController {
 
     @PostMapping("/assign")
     @PreAuthorize("hasAuthority('FIRM_ADMIN')")
-    public ResponseEntity<?> assignClientToEmployee(@RequestHeader ("Authorization") String authorization, @RequestParam String clientUid, @RequestParam String employeeUid) {
+    public ResponseEntity<?> assignClientToEmployee(@RequestHeader ("Authorization") String authorization, @RequestBody AssignClientDto assignClientDto) {
         log.info("Assigning client to employee");
         try {
             if (authorization == null || !authorization.startsWith("Bearer ")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(INVALID_TOKEN.name()));
             }
             String token = authorization.substring(7);
-            assignClientService.assignClientToEmployee(clientUid, employeeUid, token);
+            assignClientService.assignClientToEmployee(assignClientDto.getClientUid(), assignClientDto.getEmployeeUid(), token);
             return ResponseEntity.ok("Client assigned to employee successfully");
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDto(e.getMessage()));
