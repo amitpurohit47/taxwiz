@@ -1,7 +1,7 @@
 package com.taxwiz.controller;
 
 import com.taxwiz.dto.ErrorResponseDto;
-import com.taxwiz.dto.RoleDto;
+import com.taxwiz.dto.role.RoleDto;
 import com.taxwiz.service.role.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

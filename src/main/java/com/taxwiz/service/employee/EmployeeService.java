@@ -1,6 +1,6 @@
 package com.taxwiz.service.employee;
 
-import com.taxwiz.dto.EmployeeDto;
+import com.taxwiz.dto.employee.EmployeeDto;
 import com.taxwiz.exception.NotFoundException;
 import com.taxwiz.model.Employee;
 import com.taxwiz.model.Role;

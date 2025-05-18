@@ -1,6 +1,6 @@
 package com.taxwiz.service.role;
 
-import com.taxwiz.dto.RoleDto;
+import com.taxwiz.dto.role.RoleDto;
 import com.taxwiz.exception.AlreadyExistsException;
 import com.taxwiz.model.Role;
 import com.taxwiz.repository.RoleRepository;

@@ -43,33 +43,43 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = null;
         String username = null;
 
-        if (header != null && header.startsWith("Bearer ")) {
-            token = header.substring(7);
-            try {
-                username = jwtSetup.extractClaim(token, Claims::getSubject);
-            } catch (ExpiredJwtException e) {
-                log.error("Token Expired");
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write("{\"error\": \"" + TOKEN_EXPIRED.name() + "\"}");
-                response.getWriter().flush();
-                return;
-            } catch (Exception e) {
-                log.error("Error while validating token {}",e.getMessage());
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write("{\"error\": \"" + INVALID_TOKEN.name() + "\"}");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, INVALID_TOKEN.name());
-                response.getWriter().flush();
-                return;
-            }
+        if (header == null || !header.startsWith("Bearer ")) {
+            log.error("Authorization header is missing or invalid");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"error\": \"" + INVALID_TOKEN.name() + "\"}");
+            response.getWriter().flush();
+            return;
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        token = header.substring(7);
+        try {
+            log.info("Extracting username from token");
+            username = jwtSetup.extractClaim(token, Claims::getSubject);
+        } catch (ExpiredJwtException e) {
+            log.error("Token Expired");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"error\": \"" + TOKEN_EXPIRED.name() + "\"}");
+            response.getWriter().flush();
+            return;
+        } catch (Exception e) {
+            log.error("Error while validating token {}", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"error\": \"" + INVALID_TOKEN.name() + "\"}");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, INVALID_TOKEN.name());
+            response.getWriter().flush();
+            return;
+        }
 
-            if ( jwtSetup.isTokenValid(token, username) ) {
+
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            log.info("Validating token");
+            if (jwtSetup.isTokenValid(token, username)) {
                 Claims claims = jwtSetup.extractClaims(token);
                 String tokenType = claims.get("type", String.class);
                 if (tokenType == null || !tokenType.equals("login")) {
@@ -87,7 +97,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                 .map(SimpleGrantedAuthority::new)
                                 .collect(Collectors.toList());
 
-                Authentication authentication = new UsernamePasswordAuthenticationToken(username,null,grantedAuthorityList);
+                Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, grantedAuthorityList);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
                 log.error("Invalid Token");
@@ -95,8 +105,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 return;
             }
         }
-
-        doFilter(request, response, filterChain);
+        log.info("Token is valid");
+        filterChain.doFilter(request, response);
     }
 
 }

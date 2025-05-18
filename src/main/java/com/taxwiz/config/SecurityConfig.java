@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -26,6 +27,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         auth ->
                                 auth.requestMatchers("/api/user/auth/**").permitAll()
+                                        .requestMatchers("/api/client/onboarding").permitAll()
                                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
