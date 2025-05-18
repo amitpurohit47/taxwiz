@@ -6,5 +6,6 @@ public enum ErrorMessages {
     INVALID_TOKEN,
     ALREADY_EXISTS,
     MAIL_ERROR,
-    NOT_FOUND
+    NOT_FOUND,
+    NOT_VERIFIED
 }

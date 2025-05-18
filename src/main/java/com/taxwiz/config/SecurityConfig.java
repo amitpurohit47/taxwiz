@@ -24,6 +24,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         auth ->
                                 auth.requestMatchers("/api/user/auth/**").permitAll()
+                                        .requestMatchers("/api/client/onboarding").permitAll()
                                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)

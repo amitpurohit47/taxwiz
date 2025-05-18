@@ -1,7 +1,7 @@
 package com.taxwiz.controller;
 
-import com.taxwiz.dto.EmployeeDto;
-import com.taxwiz.dto.EmployeeResponseDto;
+import com.taxwiz.dto.employee.EmployeeDto;
+import com.taxwiz.dto.employee.EmployeeResponseDto;
 import com.taxwiz.dto.ErrorResponseDto;
 import com.taxwiz.exception.NotFoundException;
 import com.taxwiz.model.Employee;

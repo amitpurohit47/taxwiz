@@ -46,6 +46,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             token = header.substring(7);
             try {
+                log.info("Extracting username from token");
                 username = jwtSetup.extractClaim(token, Claims::getSubject);
             } catch (ExpiredJwtException e) {
                 log.error("Token Expired");
@@ -68,7 +69,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
+            log.info("Validating token");
             if ( jwtSetup.isTokenValid(token, username) ) {
                 Claims claims = jwtSetup.extractClaims(token);
                 String tokenType = claims.get("type", String.class);
@@ -93,7 +94,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 return;
             }
         }
-
+        log.info("Token is valid");
         doFilter(request, response, filterChain);
     }
 

@@ -46,11 +46,11 @@ public class SetPasswordService {
             User user = userRepository.findByUsername(username);
             if ( user == null) {
                 log.info("User {} not found", username);
-                throw new NotFoundException(NOT_FOUND.name());
+                throw new NotFoundException();
             }
             if (!user.getFirm().getId().equals(firmId)) {
                 log.info("User {} does not belong to firm {}", username, firmId);
-                throw new BadCredentialsException(BAD_CREDENTIALS.name());
+                throw new BadCredentialsException();
             }
             String encodedPassword = encoder.encode(password);
             user.setPassword(encodedPassword);
@@ -65,7 +65,7 @@ public class SetPasswordService {
             loginToken = jwtSetup.generateToken(loginClaims, username, Duration.ofMillis(expirationTime));
         } catch (IllegalArgumentException e) {
             log.error("Invalid token: {}", e.getMessage());
-            throw new BadCredentialsException(BAD_CREDENTIALS.name());
+            throw new BadCredentialsException();
         } catch (ExpiredJwtException e) {
             log.error("Token expired");
             throw new RuntimeException(TOKEN_EXPIRED.name());
