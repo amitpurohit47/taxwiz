@@ -14,13 +14,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static com.taxwiz.utils.ErrorMessages.*;
+import static com.taxwiz.utils.RoleInfo.FIRM_ADMIN;
 
 @Slf4j
 @Service
@@ -83,7 +89,12 @@ public class ClientService {
                 log.info("User {} not found", username);
                 throw new NotFoundException(NOT_FOUND.name());
             }
-            List<Client> clients = clientRepository.findAllByFirmId(user.getFirm().getId());
+            // Return a boolean if the user is a firm admin
+
+            boolean isFirmAdmin = user.getRoles().stream()
+                    .anyMatch(role -> role.getName().equals(FIRM_ADMIN.name()));
+            List<Client> clients = isFirmAdmin ? clientRepository.findAllByFirmId(user.getFirm().getId()) : clientRepository.findAllByEmployeeId(user.getId());
+
             return clients.stream()
                     .filter(Client::isVerified)
                     .map(client -> new ClientDto(client.getUid(), client.getName(), client.getEmail(), client.getGstNo(), client.getPhone(), client.getAddress()))
@@ -104,17 +115,4 @@ public class ClientService {
                 .toList();
     }
 
-    public List<ClientDto> fetchClientByUser(String token) {
-        String username = jwtSetup.extractClaim(token, Claims::getSubject);
-        User user = userRepository.findByUsername(username);
-        if ( user == null ) {
-            log.info("User {} not found", username);
-            throw new NotFoundException(NOT_FOUND.name());
-        }
-        List<Client> clients = clientRepository.findAllByEmployeeId(user.getId());
-        return clients.stream()
-                .filter(Client::isVerified)
-                .map(client -> new ClientDto(client.getUid(), client.getName(), client.getEmail(), client.getGstNo(), client.getPhone(), client.getAddress()))
-                .toList();
-    }
 }
