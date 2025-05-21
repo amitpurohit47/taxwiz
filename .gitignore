@@ -40,3 +40,10 @@ build/
 .DS_Store
 
 .env
+/.idea/encodings.xml
+/.idea/material_theme_project_new.xml
+/.idea/misc.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/uiDesigner.xml
+/.idea/shelf/Uncommitted_changes_before_Update_at_5_14_2025_08_20__Changes_.xml
+/.idea/vcs.xml
