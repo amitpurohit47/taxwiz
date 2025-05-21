@@ -1,6 +1,7 @@
 package com.taxwiz.service.employee;
 
 import com.taxwiz.dto.employee.EmployeeDto;
+import com.taxwiz.dto.employee.EmployeeResponseDto;
 import com.taxwiz.exception.NotFoundException;
 import com.taxwiz.model.Employee;
 import com.taxwiz.model.Role;
@@ -72,5 +73,40 @@ public class EmployeeService {
             log.error("Error creating employee: {}", e.getMessage());
             throw new RuntimeException("Error creating employee");
         }
+    }
+
+    public List<EmployeeResponseDto> getAllVerifiedEmployees(String token) {
+        log.info("Getting all verified employees");
+        Long firmId = adminCheck(token);
+        return employeeRepository
+                .findByFirmId(firmId).stream()
+                .filter(employee -> employee.getUser().isVerified())
+                .map(employee -> new EmployeeResponseDto(employee.getUid(), employee.getFirstName(), employee.getLastName(), employee.getEmail(), employee.getPhone(), employee.getAddress()))
+                .toList();
+    }
+
+    public List<EmployeeResponseDto> getAllUnverifiedEmployees(String token) {
+        log.info("Getting all unverified employees");
+        Long firmId = adminCheck(token);
+        return employeeRepository
+                .findByFirmId(firmId).stream()
+                .filter(employee -> !employee.getUser().isVerified())
+                .map(employee -> new EmployeeResponseDto(employee.getUid(), employee.getFirstName(), employee.getLastName(), employee.getEmail(), employee.getPhone(), employee.getAddress()))
+                .toList();
+    }
+
+    private Long adminCheck(String token) {
+        String adminUserName = jwtSetup.extractClaim(token, Claims::getSubject);
+        User adminUser = userRepository.findByUsername(adminUserName);
+        if (adminUser == null) {
+            log.error("Admin user not found");
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        if (!adminUser.isVerified()) {
+            log.error("Admin user is not verified");
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+
+        return adminUser.getFirm().getId();
     }
 }
