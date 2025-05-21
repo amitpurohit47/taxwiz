@@ -115,4 +115,18 @@ public class ClientService {
                 .toList();
     }
 
+    public List<ClientDto> fetchUnassignedClients(String token) {
+        String username = jwtSetup.extractClaim(token, Claims::getSubject);
+        User user = userRepository.findByUsername(username);
+        if ( user == null ) {
+            log.info("User {} not found", username);
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        List<Client> clients = clientRepository.findAllByFirmId(user.getFirm().getId());
+        return clients.stream()
+                .filter(client -> client.getEmployee() == null)
+                .map(client -> new ClientDto(client.getUid(), client.getName(), client.getEmail(), client.getGstNo(), client.getPhone(), client.getAddress()))
+                .toList();
+    }
+
 }
