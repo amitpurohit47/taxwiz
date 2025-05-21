@@ -115,6 +115,22 @@ public class ClientController {
         }
     }
 
+    @GetMapping("/unassigned")
+    @PreAuthorize("hasAuthority('FIRM_ADMIN')")
+    public ResponseEntity<?> fetchUnassignedClients(@RequestHeader ("Authorization") String authorization) {
+        log.info("Fetching unassigned clients");
+        try {
+            String token = authorization.substring(7);
+            return ResponseEntity.ok(clientService.fetchUnassignedClients(token));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDto(e.getMessage()));
+        } catch (ExpiredJwtException | BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(e.getMessage()));
+        }
+    }
+
     @PostMapping("/assign")
     @PreAuthorize("hasAuthority('FIRM_ADMIN')")
     public ResponseEntity<?> assignClientToEmployee(@RequestHeader ("Authorization") String authorization, @RequestBody AssignClientDto assignClientDto) {
