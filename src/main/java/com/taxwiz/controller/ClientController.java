@@ -83,7 +83,8 @@ public class ClientController {
         }
     }
 
-    @GetMapping("/fetch/unverified")
+    @GetMapping("/unverified")
+    @CrossOrigin("*")
     @PreAuthorize("hasAuthority('FIRM_ADMIN')")
     public ResponseEntity<?> fetchUnverifiedClients(@RequestHeader ("Authorization") String authorization) {
         log.info("Fetching unverified clients");
@@ -99,7 +100,8 @@ public class ClientController {
         }
     }
 
-    @GetMapping("/fetch")
+    @GetMapping("/verified")
+    @CrossOrigin("*")
     @PreAuthorize("hasAuthority('FIRM_ADMIN')")
     public ResponseEntity<?> fetchAllClients(@RequestHeader ("Authorization") String authorization) {
         log.info("Fetching all clients");
@@ -115,6 +117,7 @@ public class ClientController {
         }
     }
 
+    @CrossOrigin("*")
     @GetMapping("/unassigned")
     @PreAuthorize("hasAuthority('FIRM_ADMIN')")
     public ResponseEntity<?> fetchUnassignedClients(@RequestHeader ("Authorization") String authorization) {
@@ -151,4 +154,105 @@ public class ClientController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(e.getMessage()));
         }
     }
+
+    @PatchMapping("/update/name/{clientUid}")
+    @PreAuthorize("hasAuthority('FIRM_ADMIN')")
+    public ResponseEntity<?> updateClient(@RequestHeader ("Authorization") String authorization, @PathVariable String clientUid, @RequestBody ClientDto clientDto) {
+        log.info("Updating client with UID: {}", clientUid);
+        try {
+            if (authorization == null || !authorization.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(INVALID_TOKEN.name()));
+            }
+            String token = authorization.substring(7);
+            clientService.updateClient(clientUid, clientDto, token);
+            return ResponseEntity.ok("Client updated successfully");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDto(e.getMessage()));
+        } catch (ExpiredJwtException | BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(e.getMessage()));
+        }
+    }
+
+    @PatchMapping("/update/email/{clientUid}")
+    @PreAuthorize("hasAuthority('FIRM_ADMIN')")
+    public ResponseEntity<?> updateClientEmail(@RequestHeader ("Authorization") String authorization, @PathVariable String clientUid, @RequestBody ClientDto clientDto) {
+        log.info("Updating client email with UID: {}", clientUid);
+        try {
+            if (authorization == null || !authorization.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(INVALID_TOKEN.name()));
+            }
+            String token = authorization.substring(7);
+            clientService.updateClientEmail(clientUid, clientDto, token);
+            return ResponseEntity.ok("Client email updated successfully");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDto(e.getMessage()));
+        } catch (ExpiredJwtException | BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(e.getMessage()));
+        }
+    }
+
+    @PatchMapping("/update/phone/{clientUid}")
+    @PreAuthorize("hasAuthority('FIRM_ADMIN')")
+    public ResponseEntity<?> updateClientPhone(@RequestHeader ("Authorization") String authorization, @PathVariable String clientUid, @RequestBody ClientDto clientDto) {
+        log.info("Updating client phone with UID: {}", clientUid);
+        try {
+            if (authorization == null || !authorization.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(INVALID_TOKEN.name()));
+            }
+            String token = authorization.substring(7);
+            clientService.updateClientPhone(clientUid, clientDto, token);
+            return ResponseEntity.ok("Client phone updated successfully");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDto(e.getMessage()));
+        } catch (ExpiredJwtException | BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(e.getMessage()));
+        }
+    }
+
+    @PatchMapping("/update/address/{clientUid}")
+    @PreAuthorize("hasAuthority('FIRM_ADMIN')")
+    public ResponseEntity<?> updateClientAddress(@RequestHeader ("Authorization") String authorization, @PathVariable String clientUid, @RequestBody ClientDto clientDto) {
+        log.info("Updating client address with UID: {}", clientUid);
+        try {
+            if (authorization == null || !authorization.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(INVALID_TOKEN.name()));
+            }
+            String token = authorization.substring(7);
+            clientService.updateClientAddress(clientUid, clientDto, token);
+            return ResponseEntity.ok("Client address updated successfully");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDto(e.getMessage()));
+        } catch (ExpiredJwtException | BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(e.getMessage()));
+        }
+    }
+
+    @PatchMapping("/update/gst/{clientUid}")
+    @PreAuthorize("hasAuthority('FIRM_ADMIN')")
+    public ResponseEntity<?> updateClientGst(@RequestHeader ("Authorization") String authorization, @PathVariable String clientUid, @RequestBody ClientDto clientDto) {
+        log.info("Updating client GST with UID: {}", clientUid);
+        try {
+            if (authorization == null || !authorization.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(INVALID_TOKEN.name()));
+            }
+            String token = authorization.substring(7);
+            clientService.updateClientGst(clientUid, clientDto, token);
+            return ResponseEntity.ok("Client GST updated successfully");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDto(e.getMessage()));
+        } catch (ExpiredJwtException | BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDto(e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(e.getMessage()));
+        }
+    }
+
 }
