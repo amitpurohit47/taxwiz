@@ -129,4 +129,87 @@ public class ClientService {
                 .toList();
     }
 
+    public Client updateClientGst(String uid, ClientDto clientDto, String token) {
+        String username = jwtSetup.extractClaim(token, Claims::getSubject);
+        User user = userRepository.findByUsername(username);
+        if ( user == null ) {
+            log.info("User {} not found", username);
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        Client client = clientRepository.findByUid(uid);
+        if ( client == null ) {
+            log.info("Client with UID {} not found", uid);
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        client.setGstNo(clientDto.getGstNo());
+        return clientRepository.save(client);
+    }
+
+    public Client updateClientEmail(String uid, ClientDto clientDto, String token) {
+        String username = jwtSetup.extractClaim(token, Claims::getSubject);
+        User user = userRepository.findByUsername(username);
+        if ( user == null ) {
+            log.info("User {} not found", username);
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        Client client = clientRepository.findByUid(uid);
+        if ( client == null ) {
+            log.info("Client with UID {} not found", uid);
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        client.setEmail(clientDto.getEmail());
+        return clientRepository.save(client);
+    }
+
+    public Client updateClientPhone(String uid, ClientDto clientDto, String token) {
+        String username = jwtSetup.extractClaim(token, Claims::getSubject);
+        User user = userRepository.findByUsername(username);
+        if ( user == null ) {
+            log.info("User {} not found", username);
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        Client client = clientRepository.findByUid(uid);
+        if ( client == null ) {
+            log.info("Client with UID {} not found", uid);
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        client.setPhone(clientDto.getPhone());
+        return clientRepository.save(client);
+    }
+
+    public Client updateClientAddress(String uid, ClientDto clientDto, String token) {
+        String username = jwtSetup.extractClaim(token, Claims::getSubject);
+        User user = userRepository.findByUsername(username);
+        if ( user == null ) {
+            log.info("User {} not found", username);
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        Client client = clientRepository.findByUid(uid);
+        if ( client == null ) {
+            log.info("Client with UID {} not found", uid);
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        client.setAddress(clientDto.getAddress());
+        return clientRepository.save(client);
+    }
+
+    public Client updateClient(String uid, ClientDto clientDto, String token) {
+        String username = jwtSetup.extractClaim(token, Claims::getSubject);
+        User user = userRepository.findByUsername(username);
+        if ( user == null ) {
+            log.info("User {} not found", username);
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        Client client = clientRepository.findByUid(uid);
+        if ( client == null ) {
+            log.info("Client with UID {} not found", uid);
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        client.setName(clientDto.getName());
+        client.setEmail(clientDto.getEmail());
+        client.setPhone(clientDto.getPhone());
+        client.setAddress(clientDto.getAddress());
+        return clientRepository.save(client);
+    }
+
 }

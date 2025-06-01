@@ -95,6 +95,68 @@ public class EmployeeService {
                 .toList();
     }
 
+    public Employee updateEmployeeEmail(String uid, String email, String token) {
+        log.info("Updating employee email for UID: {}", uid);
+        Long firmId = adminCheck(token);
+        Employee employee = employeeRepository.findByUidAndFirmId(uid, firmId);
+        if (employee == null) {
+            log.error("Employee not found");
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        employee.getUser().setUsername(email);
+        employee.getUser().setVerified(false);
+        userRepository.save(employee.getUser());
+        return employeeRepository.save(employee);
+    }
+
+public Employee updateEmployeePhone(String uid, String phone, String token) {
+        log.info("Updating employee phone for UID: {}", uid);
+        Long firmId = adminCheck(token);
+        Employee employee = employeeRepository.findByUidAndFirmId(uid, firmId);
+        if (employee == null) {
+            log.error("Employee not found");
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        employee.setPhone(phone);
+        return employeeRepository.save(employee);
+    }
+
+public Employee updateEmployeeAddress(String uid, String address, String token) {
+        log.info("Updating employee address for UID: {}", uid);
+        Long firmId = adminCheck(token);
+        Employee employee = employeeRepository.findByUidAndFirmId(uid, firmId);
+        if (employee == null) {
+            log.error("Employee not found");
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        employee.setAddress(address);
+        return employeeRepository.save(employee);
+    }
+
+    public Employee updateEmployeeFirstName(String uid, String firstName, String token) {
+        log.info("Updating employee first name for UID: {}", uid);
+        Long firmId = adminCheck(token);
+        Employee employee = employeeRepository.findByUidAndFirmId(uid, firmId);
+        if (employee == null) {
+            log.error("Employee not found");
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        employee.setFirstName(firstName);
+        return employeeRepository.save(employee);
+    }
+
+    public Employee updateEmployeeLastName(String uid, String lastName, String token) {
+        log.info("Updating employee last name for UID: {}", uid);
+        Long firmId = adminCheck(token);
+        Employee employee = employeeRepository.findByUidAndFirmId(uid, firmId);
+        if (employee == null) {
+            log.error("Employee not found");
+            throw new NotFoundException(NOT_FOUND.name());
+        }
+        employee.setLastName(lastName);
+        return employeeRepository.save(employee);
+    }
+
     private Long adminCheck(String token) {
         String adminUserName = jwtSetup.extractClaim(token, Claims::getSubject);
         User adminUser = userRepository.findByUsername(adminUserName);
